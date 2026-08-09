@@ -1,0 +1,45 @@
+import {
+  Hand,
+  MessageSquare,
+  ClipboardList,
+  CalendarClock,
+  Wallet,
+  CreditCard,
+  ShieldCheck,
+  Handshake,
+  Stethoscope,
+  Wrench,
+  Package,
+  Timer,
+  FileText,
+  Palette,
+  RefreshCcw,
+  Layers,
+  BarChart3,
+  Sparkles,
+  type LucideIcon
+} from "lucide-react";
+import type { TipoBloco } from "@/types";
+
+export const ICONE_BLOCO: Record<TipoBloco, LucideIcon> = {
+  saudacao: Hand,
+  contexto: MessageSquare,
+  descricao_servico: ClipboardList,
+  cronograma: CalendarClock,
+  investimento: Wallet,
+  condicoes_pagamento: CreditCard,
+  validade: ShieldCheck,
+  garantia: ShieldCheck,
+  fechamento: Handshake,
+  diagnostico: Stethoscope,
+  escopo_tecnico: Wrench,
+  materiais: Package,
+  prazo_detalhado: Timer,
+  briefing: FileText,
+  processo_criativo: Palette,
+  entregaveis: Layers,
+  revisoes: RefreshCcw,
+  metodologia: BarChart3,
+  metricas: BarChart3,
+  custom: Sparkles
+};

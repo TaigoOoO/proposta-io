@@ -2,10 +2,55 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { motion, useInView, useMotionValue, animate } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 
-const EASE_SAIDA = [0.16, 1, 0.3, 1] as const;
+// Tupla mutável explícita — "as const" gera um tipo readonly que não bate
+// com os overloads de easing do Framer Motion (era a causa do erro de build).
+const EASE_SAIDA: [number, number, number, number] = [0.16, 1, 0.3, 1];
+
+/**
+ * Avaliador de cubic-bezier independente (mesmo algoritmo usado por
+ * navegadores/CSS — Newton-Raphson). Usado para reproduzir exatamente a
+ * curva EASE_SAIDA no contador animado, sem depender da API imperativa
+ * `animate()` do Framer Motion (fonte do erro de build na Vercel).
+ */
+function criarFacilitadorCubicBezier(p1x: number, p1y: number, p2x: number, p2y: number) {
+  function coeficienteA(a1: number, a2: number): number {
+    return 1 - 3 * a2 + 3 * a1;
+  }
+  function coeficienteB(a1: number, a2: number): number {
+    return 3 * a2 - 6 * a1;
+  }
+  function coeficienteC(a1: number): number {
+    return 3 * a1;
+  }
+  function calcularBezier(t: number, a1: number, a2: number): number {
+    return ((coeficienteA(a1, a2) * t + coeficienteB(a1, a2)) * t + coeficienteC(a1)) * t;
+  }
+  function calcularInclinacao(t: number, a1: number, a2: number): number {
+    return 3 * coeficienteA(a1, a2) * t * t + 2 * coeficienteB(a1, a2) * t + coeficienteC(a1);
+  }
+  function resolverTParaX(x: number): number {
+    let t = x;
+    for (let i = 0; i < 8; i++) {
+      const xAtual = calcularBezier(t, p1x, p2x) - x;
+      if (Math.abs(xAtual) < 1e-6) return t;
+      const inclinacao = calcularInclinacao(t, p1x, p2x);
+      if (Math.abs(inclinacao) < 1e-6) break;
+      t -= xAtual / inclinacao;
+    }
+    return t;
+  }
+
+  return function facilitador(x: number): number {
+    if (x <= 0) return 0;
+    if (x >= 1) return 1;
+    return calcularBezier(resolverTParaX(x), p1y, p2y);
+  };
+}
+
+const facilitadorEaseSaida = criarFacilitadorCubicBezier(...EASE_SAIDA);
 
 /**
  * Maquete animada de uma proposta sendo finalizada — ocupa o lugar do
@@ -148,21 +193,33 @@ interface EstatisticaProps {
   rotulo: string;
 }
 
+const DURACAO_CONTADOR_MS = 1600;
+
 function NumeroAnimado({ valorFinal, prefixo = "", sufixo = "", decimais = 0 }: EstatisticaProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const dentroDaTela = useInView(ref, { once: true, margin: "-60px" });
   const [valorExibido, setValorExibido] = useState(0);
-  const contador = useMotionValue(0);
 
   useEffect(() => {
     if (!dentroDaTela) return;
-    const controles = animate(contador, valorFinal, {
-      duration: 1.6,
-      ease: EASE_SAIDA,
-      onUpdate: (valorAtual) => setValorExibido(valorAtual)
-    });
-    return () => controles.stop();
-  }, [dentroDaTela, contador, valorFinal]);
+
+    const inicio = performance.now();
+    let frameId: number;
+
+    function passo(agora: number) {
+      const decorrido = agora - inicio;
+      const progresso = Math.min(decorrido / DURACAO_CONTADOR_MS, 1);
+      const progressoSuavizado = facilitadorEaseSaida(progresso);
+      setValorExibido(valorFinal * progressoSuavizado);
+
+      if (progresso < 1) {
+        frameId = requestAnimationFrame(passo);
+      }
+    }
+
+    frameId = requestAnimationFrame(passo);
+    return () => cancelAnimationFrame(frameId);
+  }, [dentroDaTela, valorFinal]);
 
   const textoFormatado =
     decimais > 0 ? valorExibido.toFixed(decimais).replace(".", ",") : Math.floor(valorExibido).toLocaleString("pt-BR");

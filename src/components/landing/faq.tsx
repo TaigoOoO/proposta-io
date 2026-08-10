@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const EASE_SAIDA = [0.16, 1, 0.3, 1] as const;
+const EASE_SAIDA: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 interface ItemFaq {
   pergunta: string;

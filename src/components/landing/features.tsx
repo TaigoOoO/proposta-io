@@ -14,7 +14,7 @@ import {
   type LucideIcon
 } from "lucide-react";
 
-const EASE_SAIDA = [0.16, 1, 0.3, 1] as const;
+const EASE_SAIDA: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 const VARIANTE_CONTAINER = {
   oculto: {},

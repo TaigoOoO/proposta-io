@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FileText, Menu, X } from "lucide-react";
 import { Footer } from "@/components/landing/footer";
 
-const EASE_SAIDA = [0.16, 1, 0.3, 1] as const;
+const EASE_SAIDA: [number, number, number, number] = [0.16, 1, 0.3, 1];
 
 export default function LayoutPublico({ children }: { children: ReactNode }) {
   const [menuAberto, setMenuAberto] = useState(false);

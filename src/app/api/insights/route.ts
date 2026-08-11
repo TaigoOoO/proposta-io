@@ -4,6 +4,10 @@ import { gerarSugestaoInsight } from "@/lib/openai";
 import { ROTULO_CATEGORIA } from "@/lib/categorias";
 import type { CategoriaTemplate, EstatisticasInsights, Proposta, TemplateProposta } from "@/types";
 
+// Esta rota lê a sessão do usuário via cookies (criarClienteSupabaseServidor),
+// então não pode ser pré-renderizada estaticamente no build.
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const supabase = await criarClienteSupabaseServidor();

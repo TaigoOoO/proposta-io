@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +13,13 @@ import { criarClienteSupabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 import { esquemaLogin, type LoginInput } from "@/lib/validacoes";
 
-export default function PaginaLogin() {
+/**
+ * `useSearchParams()` exige que o componente que a utiliza esteja dentro de
+ * um `<Suspense>` — sem isso, o Next.js não consegue pré-renderizar a rota
+ * `/login` e o build falha. Por isso a lógica fica isolada aqui, e a página
+ * (abaixo) só cuida de envolver este componente em Suspense.
+ */
+function ConteudoLogin() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [enviando, setEnviando] = useState(false);
@@ -167,5 +173,17 @@ export default function PaginaLogin() {
         </Button>
       </form>
     </div>
+  );
+}
+
+function CarregandoLogin() {
+  return <div className="flex items-center justify-center py-16 text-sm text-stone-400">Carregando...</div>;
+}
+
+export default function PaginaLogin() {
+  return (
+    <Suspense fallback={<CarregandoLogin />}>
+      <ConteudoLogin />
+    </Suspense>
   );
 }

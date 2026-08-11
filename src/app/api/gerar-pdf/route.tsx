@@ -6,6 +6,10 @@ import type { Proposta } from "@/types";
 
 export const runtime = "nodejs";
 
+// Esta rota lê a sessão do usuário via cookies (criarClienteSupabaseServidor),
+// então não pode ser pré-renderizada estaticamente no build.
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = await criarClienteSupabaseServidor();

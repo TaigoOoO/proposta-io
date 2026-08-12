@@ -64,7 +64,7 @@ export default function LayoutAuth({ children }: { children: ReactNode }) {
             <p className="mt-2 text-sm font-normal text-white/60">Em minutos, não em horas.</p>
           </div>
         </div>
-        <p className="absolute bottom-8 text-xs text-white/40">1.247 propostas geradas este mês</p>
+        <p className="absolute bottom-8 text-xs text-white/40">Em fase beta — junte-se aos primeiros usuários</p>
       </div>
 
       <div className="flex w-full flex-col items-center justify-center bg-stone-50 px-6 py-12 lg:w-[40%]">

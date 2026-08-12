@@ -234,10 +234,8 @@ function NumeroAnimado({ valorFinal, prefixo = "", sufixo = "", decimais = 0 }: 
 }
 
 const ESTATISTICAS: EstatisticaProps[] = [
-  { valorFinal: 1247, sufixo: "", rotulo: "propostas geradas este mês" },
-  { valorFinal: 98, sufixo: "%", rotulo: "de aprovação dos clientes" },
-  { valorFinal: 4.8, decimais: 1, sufixo: "★", rotulo: "no Google (127 avaliações)" },
-  { valorFinal: 500, sufixo: "+", rotulo: "prestadores de serviço" }
+  { valorFinal: 100, sufixo: "%", rotulo: "das propostas geradas com sucesso" },
+  { valorFinal: 5, sufixo: "", rotulo: "perfis de negócio testados" }
 ];
 
 export function SocialProof() {
@@ -248,16 +246,23 @@ export function SocialProof() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-60px" }}
         transition={{ duration: 0.5, ease: EASE_SAIDA }}
-        className="mx-auto grid max-w-4xl grid-cols-2 gap-8 divide-stone-200 sm:gap-6 md:grid-cols-4 md:divide-x"
+        className="mx-auto grid max-w-4xl grid-cols-1 gap-8 sm:grid-cols-3 sm:divide-x sm:divide-stone-200"
       >
         {ESTATISTICAS.map((estatistica, indice) => (
-          <div key={indice} className={indice > 0 ? "md:pl-6" : ""}>
+          <div key={estatistica.rotulo} className={indice > 0 ? "sm:pl-8" : ""}>
             <p className="text-3xl font-bold tracking-tight text-stone-900">
               <NumeroAnimado {...estatistica} />
             </p>
             <p className="mt-1 text-sm text-stone-500">{estatistica.rotulo}</p>
           </div>
         ))}
+
+        <div className="sm:pl-8">
+          <p className="text-lg font-semibold text-stone-900">Em fase de validação</p>
+          <p className="mt-1.5 text-sm leading-relaxed text-stone-500">
+            O Proposta.io está sendo validado com propostas reais de serviços. Junte-se aos primeiros usuários.
+          </p>
+        </div>
       </motion.div>
     </section>
   );
